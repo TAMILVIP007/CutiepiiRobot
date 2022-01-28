@@ -116,7 +116,7 @@ def markdown_help(update: Update, context: CallbackContext):
 def wiki(update: Update, context: CallbackContext):
     kueri = re.split(pattern="wiki", string=update.effective_message.text)
     wikipedia.set_lang("en")
-    if len(str(kueri[1])) == 0:
+    if not str(kueri[1]):
         update.effective_message.reply_text("Enter keywords!")
     else:
         try:
@@ -152,11 +152,7 @@ def wall(update: Update, context: CallbackContext):
     msg = update.effective_message
     msg_id = update.effective_message.message_id
     args = context.args
-    query = " ".join(args)
-    if not query:
-        msg.reply_text("Please enter a query!")
-        return
-    else:
+    if query := " ".join(args):
         caption = query
         term = query.replace(" ", "%20")
         json_rep = r.get(
@@ -165,31 +161,32 @@ def wall(update: Update, context: CallbackContext):
         if not json_rep.get("success"):
             msg.reply_text("An error occurred!")
 
+        elif wallpapers := json_rep.get("wallpapers"):
+            index = randint(0, len(wallpapers) - 1)  # Choose random index
+            wallpaper = wallpapers[index]
+            wallpaper = wallpaper.get("url_image")
+            wallpaper = wallpaper.replace("\\", "")
+            context.bot.send_photo(
+                chat_id,
+                photo=wallpaper,
+                caption="Preview",
+                reply_to_message_id=msg_id,
+                timeout=60,
+            )
+            context.bot.send_document(
+                chat_id,
+                document=wallpaper,
+                filename="wallpaper",
+                caption=caption,
+                reply_to_message_id=msg_id,
+                timeout=60,
+            )
         else:
-            wallpapers = json_rep.get("wallpapers")
-            if not wallpapers:
-                msg.reply_text("No results found! Refine your search.")
-                return
-            else:
-                index = randint(0, len(wallpapers) - 1)  # Choose random index
-                wallpaper = wallpapers[index]
-                wallpaper = wallpaper.get("url_image")
-                wallpaper = wallpaper.replace("\\", "")
-                context.bot.send_photo(
-                    chat_id,
-                    photo=wallpaper,
-                    caption="Preview",
-                    reply_to_message_id=msg_id,
-                    timeout=60,
-                )
-                context.bot.send_document(
-                    chat_id,
-                    document=wallpaper,
-                    filename="wallpaper",
-                    caption=caption,
-                    reply_to_message_id=msg_id,
-                    timeout=60,
-                )
+            msg.reply_text("No results found! Refine your search.")
+            return
+    else:
+        msg.reply_text("Please enter a query!")
+        return
 
 @typing_action
 def paste(update, context):

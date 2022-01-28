@@ -24,7 +24,7 @@ CHARACTER_IMG = "https://telegra.ph/file/a355b31aa5dfe112605d2.mp4"
 def shorten(description, info="anilist.co"):
     msg = ""
     if len(description) > 700:
-        description = description[0:500] + "...."
+        description = description[:500] + "...."
         msg += f"\n*Description*: _{description}_[Read More]({info})"
     else:
         msg += f"\n*Description*:_{description}_"
@@ -197,7 +197,12 @@ def anime(update: Update, context: CallbackContext):
     message = update.effective_message
     search = extract_arg(message)
     if not search:
-        update.effective_message.reply_animation(ANIME_IMG, caption=f"""Format : /anime < anime name >""", parse_mode="markdown")
+        update.effective_message.reply_animation(
+            ANIME_IMG,
+            caption='Format : /anime < anime name >',
+            parse_mode="markdown",
+        )
+
         return
     variables = {"search": search}
     json = requests.post(
@@ -268,7 +273,12 @@ def character(update: Update, context: CallbackContext):
     message = update.effective_message
     search = extract_arg(message)
     if not search:
-        update.effective_message.reply_animation(CHARACTER_IMG, caption=f"""Format : /character < character name >""", parse_mode="markdown")
+        update.effective_message.reply_animation(
+            CHARACTER_IMG,
+            caption='Format : /character < character name >',
+            parse_mode="markdown",
+        )
+
         return
     variables = {"query": search}
     json = requests.post(
@@ -283,8 +293,7 @@ def character(update: Update, context: CallbackContext):
         description = f"{json['description']}"
         site_url = json.get("siteUrl")
         msg += shorten(description, site_url)
-        image = json.get("image", None)
-        if image:
+        if image := json.get("image", None):
             image = image.get("large")
             update.effective_message.reply_photo(
                 photo=image,
@@ -301,7 +310,12 @@ def manga(update: Update, context: CallbackContext):
     message = update.effective_message
     search = extract_arg(message)
     if not search:
-        update.effective_message.reply_animation(MANGA_IMG, caption=f"""Format : /manga < manga name >""", parse_mode="markdown")
+        update.effective_message.reply_animation(
+            MANGA_IMG,
+            caption='Format : /manga < manga name >',
+            parse_mode="markdown",
+        )
+
         return
     variables = {"search": search}
     json = requests.post(
@@ -473,9 +487,7 @@ def site_search(update: Update, context: CallbackContext, site: str):
         search_url = f"https://animekaizoku.com/?s={search_query}"
         html_text = requests.get(search_url).text
         soup = bs4.BeautifulSoup(html_text, "html.parser")
-        search_result = soup.find_all("h2", {"class": "post-title"})
-
-        if search_result:
+        if search_result := soup.find_all("h2", {"class": "post-title"}):
             result = f"<b>Search results for</b> <code>{html.escape(search_query)}</code> <b>on</b> @KaizokuAnime: \n"
             for entry in search_result:
                 post_link = "https://animekaizoku.com/" + entry.a["href"]

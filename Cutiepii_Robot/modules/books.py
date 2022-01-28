@@ -12,7 +12,6 @@ async def _(event):
     if event.fwd_from:
         return
     input_str = event.pattern_match.group(1)
-    lool = 0
     KkK = await event.reply("searching for the book...")
     lin = "https://b-ok.cc/s/"
     text = input_str
@@ -32,11 +31,12 @@ async def _(event):
         await event.reply("No Books Found with that name.")
     else:
 
+        lool = 0
         for tr in soup.find_all("td"):
             for td in tr.find_all("h3"):
                 for ts in td.find_all("a"):
                     title = ts.get_text()
-                    lool = lool + 1
+                    lool += 1
                 for ts in td.find_all("a", attrs={"href": re.compile("^/book/")}):
                     ref = ts.get("href")
                     link = "https://b-ok.cc" + ref
@@ -51,7 +51,8 @@ async def _(event):
         await tbot.send_file(
             event.chat_id,
             "book.txt",
-            caption=f"**BOOKS GATHERED SUCCESSFULLY!\n\nBY CUTIEPII. JOIN THE SUPPORT @Black_Knights_Union_Support.**",
+            caption='**BOOKS GATHERED SUCCESSFULLY!\n\nBY CUTIEPII. JOIN THE SUPPORT @Black_Knights_Union_Support.**',
         )
+
         os.remove("book.txt")
         await KkK.delete()
