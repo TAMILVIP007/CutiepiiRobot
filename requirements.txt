@@ -2,7 +2,7 @@ future
 emoji
 lxml
 beautifulsoup4
-requests==2.20.0
+requests==2.31.0
 SQLAlchemy==1.4.11
 python-telegram-bot==13.5
 coffeehouse==2.2.4
