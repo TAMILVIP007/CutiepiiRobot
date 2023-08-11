@@ -68,7 +68,7 @@ PyDictionary==2.0.1
 selenium
 zalgo_text
 cowpy
-gitpython==3.1.11
+gitpython==3.1.32
 heroku3==4.2.3
 cachetools
 redis
